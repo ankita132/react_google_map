@@ -1,0 +1,27 @@
+{
+  "name": "react_map",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://ankita132.github.io/react_google_map",
+  "dependencies": {
+    "google-map-react": "^0.24.0",
+    "google-maps": "^3.2.1",
+    "lodash": "^4.17.4",
+    "prop-types": "^15.5.10",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-google-map": "^3.0.1",
+    "react-google-maps": "^6.3.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^1.0.0",
+    "react-scripts": "1.0.7"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "deploy" : "npm run build&&gh-pages -d build"
+  }
+}
