@@ -1,5 +1,5 @@
 import React,{ Component } from 'react';
-import { withGoogleMap,InfoWindow, GoogleMap, Marker, } from 'react-google-maps';
+import { withGoogleMap, InfoWindow, GoogleMap, Marker, } from 'react-google-maps';
 
 const google = window.google;
 
@@ -17,7 +17,9 @@ const AccessingArgumentsExampleGoogleMap = withGoogleMap(props => (
       >
       {marker.showInfo && (
         <InfoWindow onCloseClick={() => props.onMarkerClose(marker)}>
-        <div><h1>cool</h1></div>
+        <div><h1>Image</h1>
+        <a href="#">Upload image here</a>
+        </div>
         </InfoWindow>
       )}
       </Marker>
@@ -42,6 +44,7 @@ class AccessingArgumentsExample extends Component{
  handleMapClick = this.handleMapClick.bind(this);
  handleMarkerClick = this.handleMarkerClick.bind(this);
  handleMarkerClose = this.handleMarkerClose.bind(this);
+
 
  handleMapClick(event) {
    this.setState({
