@@ -19,6 +19,7 @@ const AccessingArgumentsExampleGoogleMap = withGoogleMap(props => (
         position={marker.position}
         key={index}
         onClick={() => props.onMarkerClick(marker)}
+        onDblClick={() => props.onMarkerDblClick(marker)}
       >
         {marker.showInfo && (
           <InfoWindow onCloseClick={() => props.onMarkerClose(marker)}>
@@ -56,6 +57,18 @@ class AccessingArgumentsExample extends Component {
     });
   }
 
+  handleMarkerDblClick=(targetMarker)=>{
+      console.log(targetMarker);
+      const markersCopy=this.state.markers.filter(marker =>{
+          if(marker===targetMarker){
+              return false;
+          }
+          return true;
+      });
+      this.setState({
+          markers: markersCopy
+      });
+  }
   handleMarkerClick(targetMarker) {
     this.setState({
       markers: this.state.markers.map(marker => {
@@ -94,6 +107,7 @@ class AccessingArgumentsExample extends Component {
         markers={this.state.markers}
         onMarkerClick={this.handleMarkerClick}
         onMarkerClose={this.handleMarkerClose}
+        onMarkerDblClick={this.handleMarkerDblClick}
       />
     );
   }
