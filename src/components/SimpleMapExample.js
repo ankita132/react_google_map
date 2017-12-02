@@ -7,6 +7,7 @@ import {
 } from "react-google-maps";
 
 const google = window.google;
+const geocoder= new google.maps.Geocoder;
 
 const AccessingArgumentsExampleGoogleMap = withGoogleMap(props => (
   <GoogleMap
@@ -23,9 +24,12 @@ const AccessingArgumentsExampleGoogleMap = withGoogleMap(props => (
       >
         {marker.showInfo && (
           <InfoWindow onCloseClick={() => props.onMarkerClose(marker)}>
-            <div>
-              <h1>Image</h1>
-              <a href="#">Upload image here</a>
+            <div className='scrollFix'>
+                <div className="row">
+                    <div className='col-md-6'><img className='img' src='http://www.nationsonline.org/gallery/Australia/Twelve-Apostles-Princetown-Australia.jpg' alt='responsive image'/></div>
+                    <div className='col-md-6'><h4 className='mk-title'>{marker.infoContent}</h4></div>
+                </div>
+              <a className='icon-color' href="#"><i className="fa fa-camera fa-lg" aria-hidden="true"></i> Upload Image here</a>
             </div>
           </InfoWindow>
         )}
@@ -40,7 +44,7 @@ class AccessingArgumentsExample extends Component {
       {
         position: new google.maps.LatLng(-23.363882, 129.044922),
         showInfo: false,
-        infoContent: <h1>cool</h1>
+        infoContent: <span>Cemetery Access, Petermann NT 0872, Australia</span>
       }
     ],
     center: new google.maps.LatLng(-25.363882, 131.044922)
@@ -51,14 +55,20 @@ class AccessingArgumentsExample extends Component {
   handleMarkerClose = this.handleMarkerClose.bind(this);
 
   handleMapClick(event) {
-    this.setState({
-      center: event.latLng,
-      markers: [...this.state.markers, { position: event.latLng }]
-    });
+      var that=this;
+      geocoder.geocode({'location':event.latLng},function(results,status){
+         if(status==='OK'){
+             const formattedAddress=results[3].formatted_address;
+             //console.log(results);
+             that.setState({
+               center: event.latLng,
+               markers: [...that.state.markers, { position: event.latLng , infoContent: formattedAddress }]
+             });
+         }
+      });
   }
 
   handleMarkerDblClick=(targetMarker)=>{
-      console.log(targetMarker);
       const markersCopy=this.state.markers.filter(marker =>{
           if(marker===targetMarker){
               return false;
@@ -78,6 +88,7 @@ class AccessingArgumentsExample extends Component {
             showInfo: true
           };
         }
+        marker.showInfo=false;
         return marker;
       })
     });
