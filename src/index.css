@@ -6,3 +6,23 @@ body {
 .map{
   height:600px;
 }
+.scrollFix{
+    line-height: 1.35;
+    overflow: hidden;
+}
+.row{
+    width: 100%;
+    margin: 0.5em;
+}
+.img{
+    height: 100%;
+    width: 100%;
+}
+.icon-color{
+    color: #3696D7;
+}
+.mk-title{
+    overflow-wrap: break-word;
+    font-size: 25px;
+    font-weight: 300;
+}
