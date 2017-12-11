@@ -1,6 +1,7 @@
 import React,{ Component } from 'react';
 import { withGoogleMap, GoogleMap, Marker, } from 'react-google-maps';
 import InfoBox from 'react-google-maps/lib/addons/InfoBox'
+import SearchBox from 'react-google-maps/lib/places/SearchBox'
 
 import firebase from 'firebase';
 import FileUploader from 'react-firebase-file-uploader';
@@ -37,7 +38,6 @@ class Uploader extends Component {
       showConfirmButton: false,
       timer: 1500
     });
-    console.log(error);
   }
   handleUploadSuccess = (filename) => {
     this.setState({progress: 100, isUploading: false});
@@ -59,7 +59,7 @@ class Uploader extends Component {
               hidden
               randomizeFilename
               accept="image/*"
-              storageRef={firebase.storage().ref()}
+              storageRef={firebase.storage().ref('images')}
               onUploadStart={this.handleUploadStart}
               onUploadError={this.handleUploadError}
               onUploadSuccess={this.handleUploadSuccess}
@@ -71,12 +71,35 @@ class Uploader extends Component {
   }
 }
 
+const INPUT_STYLE = {
+  boxSizing: `border-box`,
+  MozBoxSizing: `border-box`,
+  border: `1px solid transparent`,
+  width: `240px`,
+  height: `30px`,
+  marginTop: `10px`,
+  padding: `0 12px`,
+  borderRadius: `1px`,
+  boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`,
+  fontSize: `14px`,
+  outline: `none`,
+  textOverflow: `ellipses`,
+};
+
 const AccessingArgumentsExampleGoogleMap = withGoogleMap(props => (
   <GoogleMap
     defaultZoom={4}
-    defaultCenter={props.center}
+    center={props.center}
     onClick={props.onMapClick}
   >
+    <SearchBox
+      ref={props.onSearchBoxMounted}
+      bounds={props.bounds}
+      controlPosition={google.maps.ControlPosition.TOP_LEFT}
+      onPlacesChanged={props.onPlacesChanged}
+      inputPlaceholder="Search.."
+      inputStyle={INPUT_STYLE}
+    />
     {props.markers.map((marker, index) => (
 
         <Marker
@@ -119,6 +142,8 @@ class AccessingArgumentsExample extends Component {
   handleMapClick = this.handleMapClick.bind(this);
   handleMarkerClick = this.handleMarkerClick.bind(this);
   handleMarkerClose = this.handleMarkerClose.bind(this);
+  handleSearchBoxMounted = this.handleSearchBoxMounted.bind(this);
+  handlePlacesChanged = this.handlePlacesChanged.bind(this);
 
   handleMapClick(event) {
       var that=this;
@@ -133,7 +158,6 @@ class AccessingArgumentsExample extends Component {
          }
       });
   }
-
   handleMarkerDblClick=(targetMarker)=>{
       const markersCopy=this.state.markers.filter(marker =>{
           if(marker===targetMarker){
@@ -174,6 +198,24 @@ class AccessingArgumentsExample extends Component {
     });
   }
 
+  handleSearchBoxMounted(searchBox) {
+    this._searchBox = searchBox;
+  }
+
+  handlePlacesChanged() {
+    const places = this._searchBox.getPlaces();
+    
+    const markers = places.map(place => ({
+      position: place.geometry.location,
+    }));
+
+    const mapCenter = markers.length > 0 ? markers[0].position : this.state.center;
+    this.setState({
+      center: mapCenter,
+      markers,
+    });
+  }
+
   render() {
     return (
       <AccessingArgumentsExampleGoogleMap
@@ -185,6 +227,8 @@ class AccessingArgumentsExample extends Component {
         onMarkerClick={this.handleMarkerClick}
         onMarkerClose={this.handleMarkerClose}
         onMarkerDblClick={this.handleMarkerDblClick}
+        onSearchBoxMounted={this.handleSearchBoxMounted}
+        onPlacesChanged={this.handlePlacesChanged}
       />
     );
   }
