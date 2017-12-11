@@ -1,13 +1,75 @@
-import React, { Component } from "react";
-import {
-  withGoogleMap,
-  InfoWindow,
-  GoogleMap,
-  Marker
-} from "react-google-maps";
+import React,{ Component } from 'react';
+import { withGoogleMap, GoogleMap, Marker, } from 'react-google-maps';
+import InfoBox from 'react-google-maps/lib/addons/InfoBox'
+
+import firebase from 'firebase';
+import FileUploader from 'react-firebase-file-uploader';
+
+import swal from 'sweetalert2';
 
 const google = window.google;
 const geocoder= new google.maps.Geocoder;
+
+const config = {
+  apiKey: "AIzaSyAy-n9AAPKr4d2eY5WbUuT5_H3AYhMVZEs",
+  authDomain: "maps-af71e.firebaseapp.com",
+  databaseURL: "https://maps-af71e.firebaseio.com",
+  projectId: "maps-af71e",
+  storageBucket: "maps-af71e.appspot.com",
+  messagingSenderId: "728757124399"
+};
+firebase.initializeApp(config);
+
+class Uploader extends Component {
+
+  state = {
+    isUploading: false,
+    progress: 0
+  };
+  
+  handleUploadStart = () => this.setState({isUploading: true, progress: 0});
+  handleProgress = (progress) => this.setState({progress});
+  handleUploadError = (error) => {
+    swal({
+      type: 'error',
+      title: 'Oops !',
+      text: "Something went wrong, please try again.",
+      showConfirmButton: false,
+      timer: 1500
+    });
+    console.log(error);
+  }
+  handleUploadSuccess = (filename) => {
+    this.setState({progress: 100, isUploading: false});
+    swal({
+      type: 'success',
+      title: 'Success !',
+      text: "Your image has been uploaded.",
+      showConfirmButton: false,
+      timer: 1500
+    });
+  };
+
+  render(){
+    return (
+        <form> 
+          <label style={{backgroundColor: 'steelblue', color: 'white', padding: 10, borderRadius: 4, pointer: 'cursor'}}>
+            UPLOAD IMAGE
+            <FileUploader
+              hidden
+              randomizeFilename
+              accept="image/*"
+              storageRef={firebase.storage().ref()}
+              onUploadStart={this.handleUploadStart}
+              onUploadError={this.handleUploadError}
+              onUploadSuccess={this.handleUploadSuccess}
+              onProgress={this.handleProgress}
+            />
+          </label>
+        </form>
+    )         
+  }
+}
 
 const AccessingArgumentsExampleGoogleMap = withGoogleMap(props => (
   <GoogleMap
@@ -16,23 +78,27 @@ const AccessingArgumentsExampleGoogleMap = withGoogleMap(props => (
     onClick={props.onMapClick}
   >
     {props.markers.map((marker, index) => (
-      <Marker
-        position={marker.position}
-        key={index}
-        onClick={() => props.onMarkerClick(marker)}
-        onDblClick={() => props.onMarkerDblClick(marker)}
-      >
-        {marker.showInfo && (
-          <InfoWindow onCloseClick={() => props.onMarkerClose(marker)}>
-            <div className='scrollFix'>
-                <div className="row">
-                    <div className='col-md-6'><img className='img' src='http://www.nationsonline.org/gallery/Australia/Twelve-Apostles-Princetown-Australia.jpg' alt='responsive image'/></div>
-                    <div className='col-md-6'><h4 className='mk-title'>{marker.infoContent}</h4></div>
-                </div>
-              <a className='icon-color' href="#"><i className="fa fa-camera fa-lg" aria-hidden="true"></i> Upload Image here</a>
-            </div>
-          </InfoWindow>
-        )}
+
+        <Marker
+          position={marker.position}
+          key={index}
+          onClick={() => props.onMarkerClick(marker)}
+          onDblClick={() => props.onMarkerDblClick(marker)}
+        >
+      {marker.showInfo && (
+        <InfoBox 
+          onCloseClick={() => props.onMarkerClose(marker)}
+          options={{ closeBoxURL: ``, enableEventPropagation: false }}
+        >
+        <div className='scrollFix'>
+          <div className="row">
+            <div className='col-md-6'><img className='img' src='http://www.nationsonline.org/gallery/Australia/Twelve-Apostles-Princetown-Australia.jpg' alt='responsive image'/></div>
+            <div className='col-md-6'><h4 className='mk-title'>{marker.infoContent}</h4></div>
+          </div>
+          <Uploader />
+        </div>
+        </InfoBox>
+      )}
       </Marker>
     ))}
   </GoogleMap>
