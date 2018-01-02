@@ -11,7 +11,8 @@
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "react-firebase-file-uploader":"^2.4.1",
+    "react-facebook": "^4.2.1",
+    "react-firebase-file-uploader": "^2.4.1",
     "react-google-map": "^3.0.1",
     "react-google-maps": "^6.3.0",
     "sweetalert2": "^7.0.9"
